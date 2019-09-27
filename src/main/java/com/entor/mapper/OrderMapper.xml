@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.entor.dao.OrderDao">
+	<resultMap type="Order" id="OrderMap">
+		<id property="id" column="id"/>
+		<result property="orderCode" column="orderCode"/>
+		<result property="address" column="address"/>
+		<result property="post" column="post"/>
+		<result property="receiver" column="receiver"/>
+		<result property="mobile" column="mobile"/>
+		<result property="userMessage" column="userMessage"/>
+		<result property="createDate" column="createDate"/>
+		<result property="payDate" column="payDate"/>
+		<result property="deliveryDate" column="deliveryDate"/>
+		<result property="confirmDate" column="confirmDate"/>
+		<result property="status" column="status"/>
+		<result property="total" column="total"/>
+		<result property="totalNumber" column="totalNumber"/>
+		<!-- 多对一User -->
+		<association property="user" javaType="User">
+			<id property="id" column="uid"/>
+			<result property="name" column="uName"/>
+		</association>
+		<!-- 一对多OrderItem -->
+		<collection property="orderItems" ofType="OrderItem">
+			<id property="id" column="oiid"/>
+			<result property="number" column="oNumber"/>
+			<!-- 多对一 Product-->
+			<association property="product" javaType="Product">
+				<id property="id" column="pid"/>
+				<result property="name" column="pName"/>
+				<result property="promotePrice" column="pPrice"/>
+				<association property="firstProductImage" javaType="ProductImage">
+					<id property="id" column="fpi"/>
+					
+				</association>
+			</association>
+		</collection>
+	</resultMap>
+	
+	<select id="queryAll" resultMap="OrderMap">
+		SELECT o.*,MIN(pi.id) fpi,
+		SUM(oi.number*p.promotePrice) total,SUM(oi.number) totalNumber,
+		u.name uName,oi.pid,p.name pName,p.promotePrice pPrice,
+		oi.id oiid,oi.number oNumber 
+		FROM product p,orderitem oi,user u,order_ o,productimage pi
+		WHERE o.id=oi.oid and oi.pid=p.id and o.uid=u.id AND p.id=pi.pid GROUP BY oid,pid
+
+	</select>
+	
+	
+	
+	<select id="queryById" resultType="Order">
+		select * from order_ where id=#{id}
+	</select>
+	<delete id="deleteById">
+		delete from order_ where id=#{id}
+	</delete>
+</mapper>

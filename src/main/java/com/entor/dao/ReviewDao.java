@@ -1,0 +1,59 @@
+package com.entor.dao;
+
+import java.util.List;
+
+import com.entor.entity.Category;
+import com.entor.entity.Review;
+
+public interface ReviewDao {
+	/**
+	 * 新增
+	 * @param t
+	 */
+	public void add(Review t);
+	/**
+	 * 根据对象类型 ,id 删除
+	 * @param cls
+	 * @param id
+	 */
+	public void deleteById(int id);
+	/**
+	 * 根据主键查询角色
+	 * @param cls
+	 * @param id
+	 * @return
+	 */
+	public Review queryById(int id);
+	/**
+	 * 根据主键查询角色
+	 * @param cls
+	 * @param id
+	 * @return
+	 */
+	public List<Review> queryByPid(int pid);
+	/**
+	 * 分页查询
+	 * @param cls
+	 * @param map
+	 * @return
+	 */
+	public List<Review> queryByPage(int currentPage,int pageSize);
+	/**
+	 * 查询总记录数
+	 * @param cls
+	 * @return
+	 */
+	public int getTotals();
+	/**
+	 * 更新数据
+	 */
+	public void update(Review c);
+	/**
+	 * 根据类型查询所有记录
+	 */
+	public List<Review> queryAll();
+	/**
+	 * 查找主页属性
+	 */
+	public List<Review> queryAllForHome();
+}

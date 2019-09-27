@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.entor.dao.CategoryDao">
+	<resultMap type="Category" id="categoryMap">
+		<id property="id" column="cid"/>
+		<result property="name" column="cName"/>
+		<collection property="products" ofType="Product">
+			<id property="id" column="pid"/>
+			<result property="name" column="pName"/>
+			<result property="promotePrice" column="promotePrice"/>
+			<result property="subTitle" column="subTitle"/>
+			<!-- 多对一Category -->
+			<association property="category" javaType="Category">
+				<id property="id" column="id"/>
+				<result property="name" column="Name"/>
+			</association>
+			<!-- 多对一ProductImage -->
+			<association property="firstProductImage" javaType="ProductImage">
+				<id property="id" column="fpi"/>
+			</association>
+		</collection>
+
+	</resultMap>
+
+
+	<select id="queryAllForHome" resultMap="categoryMap">
+		SELECT c.id cid,c.name cName,p.id pid,p.name pName,p.subTitle,p.promotePrice,MIN(img.id) fpi
+		FROM product p,category c,productimage img 
+		WHERE p.cid=c.id AND img.pid=p.id GROUP BY c.id,p.id ORDER BY c.id
+	</select>
+	<select id="queryAll" resultType="Category">
+		select * from category
+	</select>
+	<select id="queryById" resultType="Category">
+		select * from category where id=#{id}
+	</select>
+	<delete id="deleteById">
+		delete from category where id=#{id}
+	</delete>
+</mapper>

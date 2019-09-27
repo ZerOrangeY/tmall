@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.entor.dao.ProductDao">
+	<resultMap type="Product" id="productMap">
+		<id property="id" column="id"/>
+		<result property="name" column="name"/>
+		<result property="subTitle" column="subTitle"/>
+		<result property="originalPrice" column="originalPrice"/>
+		<result property="promotePrice" column="promotePrice"/>
+		<result property="stock" column="stock"/>
+		<result property="createDate" column="createDate"/>
+		<result property="reviewCount" column="reviewCount"/>
+		<result property="saleCount" column="saleCount"/>
+		
+		<!-- 多对一Category -->
+		<association property="category" javaType="Category">
+			<id property="id" column="cid"/>
+			<result property="name" column="cName"/>
+		</association>
+		<!-- 多对一ProductImage -->
+		<association property="firstProductImage" javaType="ProductImage">
+			<id property="id" column="fpi"/>
+			
+			<result property="type" column="type"/>
+		</association>
+		<!-- 一对多List<ProductImage> -->
+		<collection property="productImages" ofType="ProductImage">
+			<id property="id" column="piid"/>
+			
+			<result property="type" column="type"/>
+		</collection>
+	</resultMap>	
+	
+	<select id="queryById" resultMap="productMap">
+		SELECT p.id,p.name,p.subTitle,p.orignalPrice,p.promotePrice,p.stock,p.createDate,
+			SUM(oi.number) saleCount,MIN(img.id) fpi,COUNT(r.createDate) reviewCount,
+			c.id cid,c.name cName,
+			img.id imgId,img.pid,img.type
+			FROM product p
+			LEFT JOIN category c ON p.cid=c.id
+			LEFT JOIN productimage img ON p.id=img.pid
+			LEFT JOIN review r ON p.id=r.pid
+			LEFT JOIN orderitem oi ON p.id=oi.pid
+			WHERE p.id=#{id}
+	</select>
+	
+	<select id="queryByWord" resultMap="productMap">
+		SELECT p.id,p.name,p.subTitle,p.orignalPrice,p.promotePrice,p.stock,p.createDate,
+			SUM(oi.number) saleCount,MIN(img.id) fpi,COUNT(r.createDate) reviewCount,
+			c.id cid,c.name cName,
+			img.id imgId,img.pid,img.type
+			FROM product p
+			LEFT JOIN category c ON p.cid=c.id
+			LEFT JOIN productimage img ON p.id=img.pid
+			LEFT JOIN review r ON p.id=r.pid
+			LEFT JOIN orderitem oi ON p.id=oi.pid
+			WHERE CONCAT(p.name,p.subTitle) LIKE "%"#{keyword}"%" GROUP BY p.id
+	</select>
+	
+	
+	<select id="queryAll" resultType="Product">
+		select * from product
+	</select>
+	<select id="queryByCid" resultMap="productMap">
+		SELECT p.id,p.name,p.subTitle,p.orignalPrice,p.promotePrice,p.stock,p.createDate,
+			SUM(oi.number) saleCount,MIN(img.id) fpi,COUNT(r.createDate) reviewCount,
+			c.id cid,c.name cName,
+			img.id imgId,img.pid,img.type
+			FROM product p
+			LEFT JOIN category c ON p.cid=c.id
+			LEFT JOIN productimage img ON p.id=img.pid
+			LEFT JOIN review r ON p.id=r.pid
+			LEFT JOIN orderitem oi ON p.id=oi.pid
+			WHERE c.id=#{cid} GROUP BY p.id
+	</select>
+	<delete id="deleteByCid">
+		set foreign_key_checks=0;
+		delete from product where cid=#{cid};
+		set foreign_key_check;
+	</delete>
+	
+</mapper>

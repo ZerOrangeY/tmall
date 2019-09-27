@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.entor.dao.PropertyValueDao">
+	<resultMap type="PropertyValue" id="propertyValueMap">
+		<id property="id" column="id"/>
+		<result property="value" column="value"/>
+		<association property="property" javaType="Property">
+			<id property="id" column="ptid"/>
+			<result property="name" column="ptName"/>
+		</association>
+
+	</resultMap>
+
+
+	<select id="queryByPid" resultMap="propertyValueMap">
+		SELECT pv.*,pt.id ptid,pt.name ptName FROM propertyvalue pv,property pt 
+			WHERE pv.ptid=pt.id AND pid=#{pid}
+	</select>
+	<select id="queryAll" resultType="Category">
+		select * from category
+	</select>
+	<select id="queryById" resultType="Category">
+		select * from category where id=#{id}
+	</select>
+	<delete id="deleteById">
+		delete from category where id=#{id}
+	</delete>
+</mapper>
