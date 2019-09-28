@@ -21,7 +21,6 @@
 		<!-- 多对一ProductImage -->
 		<association property="firstProductImage" javaType="ProductImage">
 			<id property="id" column="fpi"/>
-			
 			<result property="type" column="type"/>
 		</association>
 		<!-- 一对多List<ProductImage> -->

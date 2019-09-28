@@ -3,8 +3,7 @@ package com.entor.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.entor.dao.OrderDao;
-import com.entor.util.OrderUtil;
+
 
 public class Order {
 	private int id;

@@ -9,7 +9,7 @@ public interface OrderService{
 	 * 新增
 	 * @param t
 	 */
-	public void add(Order t);
+	public int add(Order t);
 	/**
 	 * 根据对象类型 ,id 删除
 	 * @param cls

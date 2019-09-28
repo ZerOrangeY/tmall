@@ -1,5 +1,7 @@
 package com.entor.controller;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,18 +14,25 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.druid.support.json.JSONWriter;
+import com.alibaba.fastjson.JSON;
 import com.entor.dao.CategoryDao;
+import com.entor.dao.OrderItemDao;
 import com.entor.dao.ProductDao;
 import com.entor.dao.ProductImageDao;
 import com.entor.dao.PropertyValueDao;
 import com.entor.dao.ReviewDao;
 import com.entor.dao.UserDao;
 import com.entor.entity.Category;
+import com.entor.entity.Order;
+import com.entor.entity.OrderItem;
 import com.entor.entity.Product;
 import com.entor.entity.PropertyValue;
 import com.entor.entity.Review;
 import com.entor.entity.User;
+import com.entor.service.OrderService;
 import com.entor.util.Page;
 
 @Controller
@@ -41,6 +50,13 @@ public class ForeController {
 	private ReviewDao rDao;
 	@Resource
 	private UserDao userDao;
+	@Resource
+	private OrderItemDao oiDao;
+	@Resource
+	private OrderService orderService;
+	/**
+	 * 显示主页商品及类目
+	 */
 	@RequestMapping("/tmall")
 	public String home(HttpServletRequest req,HttpServletResponse resp,Page page) {
 		List<Category> cs = categoryDao.queryAllForHome();
@@ -51,11 +67,15 @@ public class ForeController {
 		}
 		for (Category category : cs) {
 			category.setProductsByRow(productsByRow);
-
+			
 		}
 		req.setAttribute("cs", cs);
 		return "fore/home";
 	}
+	/**
+	 * 
+	 * 跳转商品详情页
+	 */
 	@RequestMapping("/foreproduct")
 	public String foreproduct(HttpServletRequest req,int pid,Page page) {
 
@@ -80,21 +100,27 @@ public class ForeController {
 	@RequestMapping("/loginPage")
 	public String loginPage(HttpServletRequest req,Page page) {
 		
-	
+		
 		return "fore/login";
 	}
+	/**
+	 * 
+	 *跳转我的订单
+	 */
 	@RequestMapping("/forebought")
 	public String forebought(HttpServletRequest req,Page page) {
 	
 	
 		return "fore/bought";
 	}
+	//点击购物车跳转
 	@RequestMapping("/forecart")
 	public String cart(HttpServletRequest req,Page page) {
 	
 		
 		return "fore/cart";
 	}
+	//登录验证
 	@RequestMapping("/forelogin")
 	public String loginCheck(HttpServletRequest req,HttpSession session) {
 		User user = new User();
@@ -109,11 +135,13 @@ public class ForeController {
 			return "redirect:tmall";
 			
 		}else {
+			req.setAttribute("msg", "账号或密码错误,请重新输入");
 			System.out.println(resultUser+"");
 			return "fore/home";
 		}
 		
 	}
+	//搜索栏模糊查询商品
 	@RequestMapping("/foresearch")
 	public String search(HttpServletRequest req,Page page) {
 		List<Category> cs = categoryDao.queryAll();
@@ -125,6 +153,7 @@ public class ForeController {
 		
 		return "fore/searchResult";
 	}
+	//搜索栏点击默认字段
 	@RequestMapping("/forecategory")
 	public String search(HttpServletRequest req,Page page,int cid) {
 		List<Category> cs = categoryDao.queryAll();
@@ -134,5 +163,56 @@ public class ForeController {
 		req.setAttribute("ps", ps);
 		
 		return "fore/searchResult";
+	}
+	/**
+	 * 立即购买已登录跳转购买页面
+	 * @throws IOException 
+	 */
+	@RequestMapping("/forebuyone")
+	public String userCheck(HttpServletRequest req,HttpServletResponse resp,int pid,int num) throws IOException {
+		Order order = new Order();
+		User u = (User)req.getAttribute("user");
+		Product p = new Product();
+		p.setId(pid);
+		order.setUser(u);
+		int oid = orderService.add(order);
+		OrderItem oi = new OrderItem(0,p,order,u,num);
+		oiDao.add(oi);
+		
+		
+		return "fore/buy";
+	}
+	/**
+	 * 立即购买未登录,弹窗验证
+	 * @throws IOException 
+	 */
+	@RequestMapping("/forecheckLogin")
+	@ResponseBody
+	public String forecheckLogin(HttpServletRequest req,HttpServletResponse resp) throws IOException {
+		User user = (User) req.getSession().getAttribute("user");
+		if (user==null) {
+			System.out.println("验证未通过");
+			return "fail";
+		}else {
+			System.out.println("验证通过");
+			return "success";
+			
+		}
+	}
+
+	/**
+	 *buttonLoginSubmitButton
+	 */
+	@RequestMapping("/foreloginAjax")
+	@ResponseBody
+	public String loginSubmit(HttpServletRequest req,HttpServletResponse resp) throws IOException {
+		User user = userDao.queryByUser(new User(req.getParameter("name"),req.getParameter("password"),0));
+		System.out.println("==============================");
+		System.out.println("立即购买:登录验证成功重载页面:forecheckAjax");
+		if (user!=null) {
+			req.getSession().setAttribute("user", user);
+			return "success";
+		}
+		return "fail";
 	}
 }

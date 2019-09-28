@@ -1,5 +1,7 @@
 package com.entor.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -15,9 +17,15 @@ public class OrderServiceImpl implements OrderService{
 	@Resource
 	private OrderDao orderDao;
 	@Override
-	public void add(Order t) {
-		// TODO Auto-generated method stub
+	public int add(Order t) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmdd");
 		
+		System.out.println(new Date());
+		String orderCode=""+sdf.format(new Date())+t.getId();
+		System.out.println("orderCode:"+orderCode);
+		t.setOrderCode(orderCode);
+		orderDao.add(t);
+		return orderDao.queryMaxId();
 	}
 
 	@Override

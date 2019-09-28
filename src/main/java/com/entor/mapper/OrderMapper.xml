@@ -48,13 +48,21 @@
 		WHERE o.id=oi.oid and oi.pid=p.id and o.uid=u.id AND p.id=pi.pid GROUP BY oid,pid
 
 	</select>
-	
-	
-	
 	<select id="queryById" resultType="Order">
 		select * from order_ where id=#{id}
+	</select>
+	<select id="queryMaxId" resultType="int">
+		SELECT MAX(id) FROM order_
 	</select>
 	<delete id="deleteById">
 		delete from order_ where id=#{id}
 	</delete>
+	<insert id="add" parameterType="Order">
+		INSERT INTO order_(orderCode,uid,address,post,receiver,mobile,userMessage,createDate,payDate,deliveryDate,confirmDate,status) 
+		VALUES(#{orderCode},#{user.id},#{address},#{post},#{receiver},#{mobile},#{userMessage},now(),#{payDate},#{deliveryDate},#{confirmDate},#{status})
+		<selectKey resultType="int" keyProperty="id" order="AFTER">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+	</insert>
+	
 </mapper>

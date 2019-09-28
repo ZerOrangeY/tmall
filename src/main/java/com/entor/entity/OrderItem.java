@@ -6,6 +6,18 @@ public class OrderItem {
 	private Order order;
 	private User user;
 	private int number;
+	
+	public OrderItem() {
+		super();
+	}
+	public OrderItem(int id, Product product, Order order, User user, int number) {
+		super();
+		this.id = id;
+		this.product = product;
+		this.order = order;
+		this.user = user;
+		this.number = number;
+	}
 	public int getId() {
 		return id;
 	}

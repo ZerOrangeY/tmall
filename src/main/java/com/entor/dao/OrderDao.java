@@ -10,7 +10,7 @@ public interface OrderDao {
 	 * 新增
 	 * @param t
 	 */
-	public void add(Order t);
+	public int add(Order t);
 	/**
 	 * 根据对象类型 ,id 删除
 	 * @param cls
@@ -24,6 +24,13 @@ public interface OrderDao {
 	 * @return
 	 */
 	public Order queryById(int id);
+	/**
+	 * 根据主键查询最大ID值(返回刚插入的id)
+	 * @param cls
+	 * @param id
+	 * @return
+	 */
+	public int queryMaxId();
 	/**
 	 * 分页查询
 	 * @param cls
