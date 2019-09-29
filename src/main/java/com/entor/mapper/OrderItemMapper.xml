@@ -9,7 +9,9 @@
 	<select id="queryById" resultType="OrderItem">
 		SELECT
 	</select>
-	
+	<insert id="add" parameterType="OrderItem">
+		INSERT INTO orderitem(pid,oid,uid,number)VALUES(#{product.id},#{order.id},#{user.id},#{number})
+	</insert>
 	<delete id="deleteById">
 		delete from category where id=#{id}
 	</delete>

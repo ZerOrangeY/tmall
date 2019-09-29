@@ -73,6 +73,7 @@
 			</thead>
 			<tbody class="productListTableTbody">
 				<c:forEach items="${ois}" var="oi" varStatus="st" >
+					<input id="oid" name="orderId" value="${oi.id}" type="hidden">
 					<tr class="orderItemTR">
 						<td class="orderItemFirstTD"><img class="orderItemImg" src="img/productSingle_middle/${oi.product.firstProductImage.id}.jpg"></td>
 						<td class="orderItemProductInfo">
@@ -140,6 +141,7 @@
 
 	<div class="orderItemTotalSumDiv">
 		<div class="pull-right"> 
+			
 			<span>实付款：</span>
 			<span class="orderItemTotalSumSpan">￥<fmt:formatNumber type="number" value="${total}" minFractionDigits="2"/></span>
 		</div>

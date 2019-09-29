@@ -172,15 +172,28 @@ public class ForeController {
 	public String userCheck(HttpServletRequest req,HttpServletResponse resp,int pid,int num) throws IOException {
 		Order order = new Order();
 		User u = (User)req.getAttribute("user");
-		Product p = new Product();
-		p.setId(pid);
+		Product p = productDao.queryById(pid);
 		order.setUser(u);
 		int oid = orderService.add(order);
+		order.setId(oid);
 		OrderItem oi = new OrderItem(0,p,order,u,num);
 		oiDao.add(oi);
-		
-		
+		List<OrderItem> ois = new ArrayList<>();
+		ois.add(oi);
+		req.setAttribute("ois", ois);
+		req.setAttribute("oid", oi.getId());
+		req.setAttribute("total", num*p.getPromotePrice());
 		return "fore/buy";
+	}
+	/**
+	 * 提交订单,导入地址详情,跳转到付款页面
+	 */
+	@RequestMapping("/forecreateOrder")
+	public String createOrder(HttpServletRequest req,Page page,int cid) {
+		String oid = req.getParameter("orderId");
+		
+		
+		return "fore/searchResult";
 	}
 	/**
 	 * 立即购买未登录,弹窗验证

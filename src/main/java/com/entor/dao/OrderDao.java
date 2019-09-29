@@ -24,6 +24,7 @@ public interface OrderDao {
 	 * @return
 	 */
 	public Order queryById(int id);
+
 	/**
 	 * 根据主键查询最大ID值(返回刚插入的id)
 	 * @param cls
